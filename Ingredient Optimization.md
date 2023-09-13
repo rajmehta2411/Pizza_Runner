@@ -5,14 +5,7 @@
 1. What are the standard ingredients for each pizza?
 2. What was the most commonly added extra?
 3. What was the most common exclusion?
-4. Generate an order item for each record in the customers_orders table in the format of one of the following:
-- Meat Lovers
-- Meat Lovers - Exclude Beef
-- Meat Lovers - Extra Bacon
-- Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
-5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
-- For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
-6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
+4. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
 
 ***
 
@@ -143,92 +136,9 @@ LIMIT 1;
 
 ***
 
-###  4. Generate an order item for each record in the customers_orders table in the format of one of the following:
-- Meat Lovers
-- Meat Lovers - Exclude Beef
-- Meat Lovers - Extra Bacon
-- Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
-
-```sql
-WITH order_summary_cte AS
-  (SELECT pizza_name,
-          row_num,
-          order_id,
-          customer_id,
-          excluded_topping,
-          t2.topping_name AS extras_topping
-   FROM
-     (SELECT *,
-             topping_name AS excluded_topping
-      FROM row_split_customer_orders_temp
-      LEFT JOIN standard_ingredients USING (pizza_id)
-      LEFT JOIN pizza_toppings ON topping_id = exclusions) t1
-   LEFT JOIN pizza_toppings t2 ON t2.topping_id = extras)
-SELECT order_id,
-       customer_id,
-       CASE
-           WHEN excluded_topping IS NULL
-                AND extras_topping IS NULL THEN pizza_name
-           WHEN extras_topping IS NULL
-                AND excluded_topping IS NOT NULL THEN concat(pizza_name, ' - Exclude ', GROUP_CONCAT(DISTINCT excluded_topping))
-           WHEN excluded_topping IS NULL
-                AND extras_topping IS NOT NULL THEN concat(pizza_name, ' - Include ', GROUP_CONCAT(DISTINCT extras_topping))
-           ELSE concat(pizza_name, ' - Include ', GROUP_CONCAT(DISTINCT extras_topping), ' - Exclude ', GROUP_CONCAT(DISTINCT excluded_topping))
-       END AS order_item
-FROM order_summary_cte
-GROUP BY row_num;
-``` 
-	
-#### Result set:
-![image](https://user-images.githubusercontent.com/77529445/167685922-38e6d766-7159-401d-9ba9-361113965dc5.png)
 
 
-### 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
-### For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
-
-
-```sql
-WITH cte_toppings AS (
-	SELECT
-		pt.topping_name,
-		tpr.pizza_id,
-        pn.pizza_name
-	FROM temp_pizza_recipes tpr
-    JOIN pizza_toppings pt ON pt.topping_id = tpr.toppings
-    JOIN pizza_names pn ON pn.pizza_id = tpr.pizza_id
-    ORDER BY pn.pizza_name),
-topping_group AS (
-SELECT
-	pizza_id,
-	GROUP_CONCAT(topping_name) AS toppings
-FROM cte_toppings
-GROUP BY pizza_id)
-SELECT
-	tco.order_id,
-    tco.customer_id,
-    tco.pizza_id,
-	tco.exclusions,
-    tco.extras,
-    tco.order_date,
-    CASE
-		WHEN ct.pizza_id = 1 THEN CONCAT(ct.pizza_name, ":", " ", "2x", " ", tg.toppings)
-        WHEN ct.pizza_id = 2 THEN CONCAT(ct.pizza_name, ":", " ", "2x", " ", tg.toppings)
-	END AS ingredient_list
-FROM cte_toppings ct
-LEFT JOIN topping_group tg ON tg.pizza_id = ct.pizza_id
-LEFT JOIN temp_customer_orders tco ON tg.pizza_id = tco.pizza_id
-GROUP BY tco.order_id, tco.exclusions;
-``` 
-	
-#### Result set:
-</br>
-<img width="518" alt="5" src="https://user-images.githubusercontent.com/79323632/156981980-80cf37e2-e099-4265-bc29-b5571acd6e5f.PNG">
-
-<h3 align="left">
-
-***
-
-### 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
+### 4. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
 
 ```sql
 SELECT
