@@ -54,3 +54,15 @@ There are some known data issues with few tables. Data cleaning was performed an
 - [C. Ingredient Optimisation](https://github.com/rajmehta2411/Pizza_Runner/blob/main/Ingredient%20Optimization.md)
 - [D. Pricing and Ratings](https://github.com/rajmehta2411/Pizza_Runner/blob/main/Pricing%20and%20Rating.md)
 - [E. Bonus Questions](https://github.com/rajmehta2411/Pizza_Runner/blob/main/Bonus%20Questions.md)
+
+## 🚀 About Me
+A Data Analyst well equipped with Knowledge of SQL,Python,PowerBI and Excel.
+
+
+## 🛠 Skills
+SQL, Python, PowerBI, Excel and many more...
+
+
+## 🔗 Links
+[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://rajmehta2411.github.io/Final.github.io//)
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rajmehta2411//)
